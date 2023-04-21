@@ -1,4 +1,4 @@
-from classes import User, Cart, Inventory
+from classes import User, Cart, Shop, Item
 
 # Main menu function
 def main_menu():
@@ -18,7 +18,7 @@ def main_menu():
         print("\n--- Main Menu ---")
         print("1. User")
         print("2. Cart")
-        print("3. Inventory")
+        print("3. Shop")
         print("4. Exit")
         choice = input("Enter your choice: ")
 
@@ -27,7 +27,7 @@ def main_menu():
         elif choice == "2":
             cart_menu()
         elif choice == "3":
-            inventory_menu()
+            shop_menu()
         elif choice == "4":
             print("Have a nice day!")
             break
@@ -56,17 +56,21 @@ def cart_menu():
     cart.shipping()
     cart.quantity()
 
-# Inventory
-def inventory_menu():
-    inventory = Inventory() 
+# Item 
+def item_menu():
+    item = Item() 
 
-    inventory.setName()
-    inventory.setAmount()
-    inventory.subtractAmount()
-    inventory.setPrice()
-    inventory.getName()
-    inventory.getAmount()
-    inventory.getPrice()
+    item.setName()
+    item.setAmount()
+    item.subtractAmount()
+    item.setPrice()
+    item.getName()
+    item.getAmount()
+    item.getPrice()
 
+def shop_menu():
+    shop = Shop()
+
+    
 if __name__ == "__main__":
     main_menu()
