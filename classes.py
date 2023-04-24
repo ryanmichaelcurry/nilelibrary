@@ -1,9 +1,11 @@
-class User:
-    def __init__(self):
-        self.id = None
-        self.username = None
-        self.status = None
+import sqlite3
 
+class User:
+    def __init__(self, id, username, password):
+        self.id = id
+        self.username = username
+        self.password = password
+ 
     def login(self):
         pass
 
@@ -19,8 +21,9 @@ class User:
     def setStatus(self):
         pass
 
-    def getUsername(self):
-        pass
+    def getUsername(username):
+
+        return None
 
     def getID(self):
         pass
@@ -49,31 +52,70 @@ class Cart:
 # This is where the all the items will sit but the shop class is where the customer will be able to view the items and add them to the cart
 class Item:
     def __init__(self):
-        self.item_name = None
-        self.amount = None
-        self.price = None
+        self.name = None
+        self.amount = 0
+        self.price = 0.00
 
     def setName(self, name):
-        pass
+        self.name = name
 
-    def setAmount(self, quantity):
-        pass
+    def setAmount(self, amount):
+        self.amount = amount
 
     def subtractAmount(self, amount):
-        pass
+        self.amount -= amount
 
     def setPrice(self, price):
-        pass
+        self.price = price
 
     def getName(self):
-        pass
+        return self.name
 
     def getAmount(self):
-        pass
+        return self.amount
 
     def getPrice(self):
-        pass
+        return self.price
+
+    def save_to_database(self):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS items
+                     (name TEXT PRIMARY KEY, amount INTEGER, price REAL)''')
+        c.execute("INSERT OR REPLACE INTO items (name, amount, price) VALUES (?, ?, ?)",
+                  (self.name, self.amount, self.price))
+        conn.commit()
+        conn.close()
+    
+    def load_items_from_database(self):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+        c.execute("SELECT name, amount, price FROM items")
+        results = c.fetchall()
+        conn.close()
+
+        self.items = [{'name': row[0], 'amount': row[1], 'price': row[2]} for row in results]
+
+    def view_items(self):
+        self.load_items_from_database()
+        for item in self.items:
+            print(f"x{item['amount']}) {item['name']} ------- ${item['price']}")
 
 
 class Shop:
     def __init__(self):
+        self.items = []
+
+    def load_items_from_database(self):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+        c.execute("SELECT name, amount, price FROM items")
+        results = c.fetchall()
+        conn.close()
+
+        self.items = [{'name': row[0], 'amount': row[1], 'price': row[2]} for row in results]
+
+    def view_items(self):
+        self.load_items_from_database()
+        for item in self.items:
+            print(f"{item['name']} ------- ${item['price']}")
