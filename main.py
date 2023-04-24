@@ -91,14 +91,16 @@ def item_menu():
         print("\n--- Inventory ---")
         print("1. Add an Inventory")
         print("2. View Inventory")
-        print("3. Return to Main Menu")
+        print("3. Delete Item")
+        print("4. Return to Main Menu")
         choice = input("Enter a number: ")
 
+        #Add Item
         if choice == "1":
             name = input("\nEnter item name: ")
             item.setName(name)
 
-            amount = int(input("Enter item amount: "))
+            amount = int(input("Enter amount: "))
             item.setAmount(amount)
 
             price = float(input("Enter item price: $"))
@@ -108,24 +110,54 @@ def item_menu():
 
             print("Item saved to database.\n")
 
+        #View Inventory
         elif choice == "2":
             print("\n")
             item.view_items()
 
+        #Remove Items Completely
         elif choice == "3":
+            item_name = input("Which Item would like to delete?: ")
+            item.delete_item(item_name)
+
+        #Return to Main Menu
+        elif choice == "4":
             break
 
 def shop_menu():
+    shop = Shop()
+    cart = Cart()
+
     while True:
         print("\n----- Shop -----")
-        shop = Shop()
-        shop.view_items()
+        print("1. View Shop")
+        print("2. Add to Cart")
+        print("3. Return to Main Menu")
+        choice = input("What would you like to do?: ")
 
-        choice = input("\nTo return to the Main Menu please input 1: ")
         if choice == "1":
+            print("\n")
+            is_empty = shop.load_database()
+            if is_empty:
+                continue
+        
+        elif choice == "2":
+            print("\n")
+            is_empty = shop.load_database()
+            if is_empty:
+                continue
+            else:
+                print("\nPlease enter the name of the item you would like to add as well as the quantity! ")
+                item = input("Item: ")
+                amount = input("Quantity: x")
+                cart.add_to_cart(item, amount)
+
+        elif choice == "3":
             break
+
         else:
-            print("Ok stay for a while! Continue browsing!")
+            print("Sorry that was an invalid choice, please try again!")
+
 
     
 if __name__ == "__main__":

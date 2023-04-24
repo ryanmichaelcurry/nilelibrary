@@ -81,7 +81,7 @@ class Item:
         conn = sqlite3.connect('shop.db')
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS items
-                     (name TEXT PRIMARY KEY, amount INTEGER, price REAL)''')
+                    (name TEXT PRIMARY KEY, amount INTEGER, price REAL)''')
         c.execute("INSERT OR REPLACE INTO items (name, amount, price) VALUES (?, ?, ?)",
                   (self.name, self.amount, self.price))
         conn.commit()
@@ -98,24 +98,45 @@ class Item:
 
     def view_items(self):
         self.load_items_from_database()
+        if not self.items:
+            print("\nSorry the shop is currently empty! Please Try again later.")
+            return
+        
         for item in self.items:
-            print(f"x{item['amount']}) {item['name']} ------- ${item['price']}")
+            print(f"(x{item['amount']}) {item['name']} ------- ${item['price']:.2f}")
+    
+    def delete_item(self, item_name):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM items WHERE name=?", (item_name,))
+        conn.commit()
+        conn.close()
+        print(f"'{item_name}' has been deleted from our inventory.")
 
 
 class Shop:
     def __init__(self):
-        self.items = []
-
-    def load_items_from_database(self):
         conn = sqlite3.connect('shop.db')
         c = conn.cursor()
-        c.execute("SELECT name, amount, price FROM items")
+        c.execute('''CREATE TABLE IF NOT EXISTS items
+                     (name TEXT PRIMARY KEY, price REAL, amount INTEGER)''')
+        conn.commit()
+        conn.close()
+
+    def load_database(self):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+        c.execute("SELECT name, price, amount FROM items")
         results = c.fetchall()
         conn.close()
 
-        self.items = [{'name': row[0], 'amount': row[1], 'price': row[2]} for row in results]
+        if not results:
+            print("Sorry the shop is empty! Please try again later!")  
+            return True 
 
-    def view_items(self):
-        self.load_items_from_database()
-        for item in self.items:
-            print(f"{item['name']} ------- ${item['price']}")
+        print("Items in the shop:")
+        for row in results:
+            name, price, amount = row
+            print(f"(x{item['amount']}) {item['name']} ------- ${item['price']:.2f}")
+        return False 
+
