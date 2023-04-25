@@ -6,9 +6,9 @@ def main_menu():
         print("Hello welcom to Nile Library!")
         print("--- Login ---")
         username = input("Enter your username: ")
-        password = user.getPass("Enter your password: ") #I kind of am winging it here, not really sure how to do the log in stuff
-        user = User()
-        if user.login(username, password):
+        password = input("Enter your password: ") #I kind of am winging it here, not really sure how to do the log in stuff
+        user = User(-1, username, password)
+        if user.login():
             print("Login successful!")
             break
         else:

@@ -1,32 +1,99 @@
 import sqlite3
+import bcrypt
 
 class User:
     def __init__(self, id, username, password):
         self.id = id
         self.username = username
         self.password = password
+        self.isLogin = False
  
     def login(self):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS
+            `user` (
+                `user_id` INTEGER PRIMARY KEY,
+                `username` varchar(255) not null,
+                `password` varchar(255) not null,
+                `status` tinyint not null
+            )
+        ''')
+
+        c.execute("SELECT * FROM user WHERE username = ?", (self.username))
+        results = c.fetchall()
+
+        if results[0][3] <= 0: # status is non-positive
+            pass
+
+        hashed = results[0][2]
+
+        if bcrypt.checkpw(self.password, hashed):
+            self.isLogin = True
+        else:
+            print("Incorrect Credentials")
+
         pass
 
     def signout(self):
+        self.isLogin = False
         pass
 
     def signup(self):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS
+            `user` (
+                `user_id` INTEGER PRIMARY KEY,
+                `username` varchar(255) not null,
+                `password` varchar(255) not null,
+                `status` tinyint not null
+            )
+        ''')
+
+        c.execute("SELECT username FROM user WHERE username = ?", (self.username))
+        results = c.fetchall()
+
+        if not results:
+            hashed = bcrypt.hashpw(self.password, bcrypt.gensalt())
+            c.execute("INSERT INTO items (username, password, status) VALUES (?, ?, ?)",
+                    (self.username, hashed, 1))
+            conn.commit()
+        
+        conn.close()
         pass
 
     def getStatus(self):
-        pass
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS
+            `user` (
+                `user_id` INTEGER PRIMARY KEY,
+                `username` varchar(255) not null,
+                `password` varchar(255) not null,
+                `status` tinyint not null
+            )
+        ''')
+
+        c.execute("SELECT user_id, username, password, status FROM user WHERE username = ?", (self.username))
+        results = c.fetchall()
+
+        return results[0][1]
 
     def setStatus(self):
         pass
 
     def getUsername(username):
-
         return None
 
     def getID(self):
-        pass
+        return self.id
 
 
 class Cart:
