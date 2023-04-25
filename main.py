@@ -3,22 +3,27 @@ from classes import User, Cart, Shop, Item
 # Main menu function
 def main_menu():
     while True:
-        print("Hello welcom to Nile Library!")
+        print("Hello welcome to Nile Library!")
         print("--- Login ---")
         username = input("Enter your username: ")
         password = input("Enter your password: ") #I kind of am winging it here, not really sure how to do the log in stuff
-        user = User(-1, username, password)
-        if user.login():
-            print("Login successful!")
+        user = User(username, password)
+        if user.signup():
+            print("Registration successful!")
+            user.login()
             break
         else:
-            print("Invalid username or password. Please try again.")
+            if user.login():
+                print("Login successful!")
+                break
+            else:
+                print("Invalid username or password. Please try again.")
 
     while True:
         # I just used this as a place holder we can change 1 and 2 to whatever we want to. I assume that if 
         # we are having stutus for people changing the inventory we should have a seperate menu for them that adds
         # the inventory tab.
-        if user.getStatus == "1": 
+        if user.getStatus() == 1: 
             print("\n--- Main Menu ---")
             print("1. User")
             print("2. Cart")
@@ -27,18 +32,18 @@ def main_menu():
             choice = input("Please enter a number: ")
 
             if choice == "1":
-                user_menu()
+                user_menu(user)
             elif choice == "2":
-                cart_menu()
+                cart_menu(user)
             elif choice == "3":
-                shop_menu()
+                shop_menu(user)
             elif choice == "4":
                 print("Have a nice day!")
                 break
             else:
                 print("Invalid choice! Please try again.")
 
-        if user.getStatus == "2":
+        if user.getStatus() == 2:
             print("\n--- Main Menu ---")
             print("1. User")
             print("2. Cart")
@@ -48,13 +53,13 @@ def main_menu():
             choice = input("Please enter a number: ")
 
             if choice == "1":
-                user_menu()
+                user_menu(user)
             elif choice == "2":
-                cart_menu()
+                cart_menu(user)
             elif choice == "3":
-                item_menu()
+                item_menu(user)
             elif choice == "4":
-                shop_menu()
+                shop_menu(user)
             elif choice == "5":
                 print("Have a nice day!")
                 break
@@ -62,29 +67,64 @@ def main_menu():
                 print("Invalid choice! Please try again.")
 
 # User
-def user_menu():
-    user = User()
+def user_menu(user: User):
+    cart = Cart()
 
-    user.login()
-    user.signup()
-    user.signout()
-    user.getStatus()
-    user.setStatus()
-    user.getUsername()
-    user.getID()
+    while True:
+        print("\n--- User Menu ---")
+        print("1. Order History")
+        print("2. Edit Shipping Information")
+        print("3. Edit Payment Information")
+        print("4. Return to Main Menu")
+        choice = input("Please enter a number: ")
+
+        if choice == "1":
+            print("\n")
+            user.getOrderHistory()
+        elif choice == "2":
+            address = input("Please enter your full address: ")
+            user.setAddress(address)
+        elif choice == "3":
+            credit_card = input("Please enter your Credit Card: ")
+            user.setCreditCard(credit_card)
+        #Return to Main Menu
+        elif choice == "4":
+            break
+        elif choice == "5":
+            user.setStatus(2)
+            break
 
 # Cart
-def cart_menu():
-    cart = Cart() 
+def cart_menu(user: User):
+    cart = Cart()
 
-    cart.goBack()
-    cart.viewCart()
-    cart.remove()
-    cart.shipping()
-    cart.quantity()
+    while True:
+        print("\n--- Cart Menu ---")
+        print("1. View Cart")
+        print("2. Checkout Cart")
+        print("3. Remove Item")
+        print("4. Edit Item's Quantity")
+        print("5. Return to Main Menu")
+        choice = input("Please enter a number: ")
+
+        if choice == "1":
+            print("\n")
+            cart.viewCart(user)
+        elif choice == "2":
+            cart.checkOut(user)
+        elif choice == "3":
+            item_id = int(input("Item ID: "))
+            cart.quantity(user, item_id, 0)
+        elif choice == "4":
+            item_id = int(input("Item ID: "))
+            quantity = int(input("Quantity: x"))
+            cart.quantity(user, item_id, quantity)
+        #Return to Main Menu
+        elif choice == "5":
+            break
 
 # Item / inventory
-def item_menu():
+def item_menu(user):
     item = Item()
     
     while True: 
@@ -106,25 +146,25 @@ def item_menu():
             price = float(input("Enter item price: $"))
             item.setPrice(price)
 
-            item.save_to_database()
+            item.save_to_database(user)
 
             print("Item saved to database.\n")
 
         #View Inventory
         elif choice == "2":
             print("\n")
-            item.view_items()
+            item.view_items(user)
 
         #Remove Items Completely
         elif choice == "3":
-            item_name = input("Which Item would like to delete?: ")
-            item.delete_item(item_name)
+            item_id = input("Which Item would like to delete?: ")
+            item.delete_item(user, item_id)
 
         #Return to Main Menu
         elif choice == "4":
             break
 
-def shop_menu():
+def shop_menu(user):
     shop = Shop()
     cart = Cart()
 
@@ -147,10 +187,10 @@ def shop_menu():
             if is_empty:
                 continue
             else:
-                print("\nPlease enter the name of the item you would like to add as well as the quantity! ")
-                item = input("Item: ")
+                print("\nPlease enter the ID of the item you would like to add as well as the quantity! ")
+                item = input("Item ID: ")
                 amount = input("Quantity: x")
-                cart.add_to_cart(item, amount)
+                cart.addToCart(user, item, amount)
 
         elif choice == "3":
             break
