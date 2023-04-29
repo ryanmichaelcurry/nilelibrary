@@ -158,7 +158,7 @@ class User:
     def deleteAccount(self):
         conn = sqlite3.connect('shop.db')
         c = conn.cursor()
-        
+
         c.execute('''CREATE TABLE IF NOT EXISTS items
                     (item_id INTEGER PRIMARY KEY, user_id INTEGER not null, name varchar(255) not null, amount INTEGER not null, price REAL not null)''')
         
@@ -292,13 +292,11 @@ class Cart:
         c.execute("SELECT * FROM cart WHERE user_id = ? AND checkout = ?", (user.getID(), 0))
         results = c.fetchall()
 
-        print(results)
 
         if len(results) <= 0:   # cart does not exist
             c.execute("INSERT INTO cart (user_id, checkout) VALUES (?, ?) RETURNING cart_id", (user.getID(), 0))
             results = c.fetchall()
             conn.commit()
-            print(results)
 
         cart_id = results[0][0]
         
@@ -354,7 +352,6 @@ class Cart:
         for item in results:
             c.execute("SELECT item_id, name, price FROM items WHERE item_id = ?", (item[0], ))
             newResults = c.fetchall()
-            print(newResults)
             item_id, name, price = newResults[0]
             print(f"{item_id}: (x{item[1]}) {name} ------- ${price:.2f}")
         
@@ -397,7 +394,6 @@ class Cart:
 
         c.execute("SELECT item_id, amount FROM cart_item WHERE cart_id = ?", (cart_id,))
         results = c.fetchall()
-        print(results)
 
         for item in results:
             c.execute("UPDATE items SET amount = amount - ? WHERE item_id = ?", (item[1], item[0]))

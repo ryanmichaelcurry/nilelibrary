@@ -39,7 +39,7 @@ def main_menu():
                 shop_menu(user)
             elif choice == "4":
                 print("Have a nice day!")
-                break
+                exit()
             else:
                 print("Invalid choice! Please try again.")
 
@@ -62,7 +62,7 @@ def main_menu():
                 shop_menu(user)
             elif choice == "5":
                 print("Have a nice day!")
-                break
+                exit()
             else:
                 print("Invalid choice! Please try again.")
 
@@ -93,7 +93,7 @@ def user_menu(user: User):
             if confirmation == "Y":
                 if user.deleteAccount():
                     main_menu()
-                    
+
         #Return to Main Menu
         elif choice == "5":
             break
@@ -120,9 +120,11 @@ def cart_menu(user: User):
         elif choice == "2":
             cart.checkOut(user)
         elif choice == "3":
+            cart.viewCart(user)
             item_id = int(input("Item ID: "))
             cart.quantity(user, item_id, 0)
         elif choice == "4":
+            cart.viewCart(user)
             item_id = int(input("Item ID: "))
             quantity = int(input("Quantity: x"))
             cart.quantity(user, item_id, quantity)
