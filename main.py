@@ -75,7 +75,8 @@ def user_menu(user: User):
         print("1. Order History")
         print("2. Edit Shipping Information")
         print("3. Edit Payment Information")
-        print("4. Return to Main Menu")
+        print("4. Delete Account")
+        print("5. Return to Main Menu")
         choice = input("Please enter a number: ")
 
         if choice == "1":
@@ -87,10 +88,16 @@ def user_menu(user: User):
         elif choice == "3":
             credit_card = input("Please enter your Credit Card: ")
             user.setCreditCard(credit_card)
-        #Return to Main Menu
         elif choice == "4":
-            break
+            confirmation = input("Are you sure (Y/N): ")
+            if confirmation == "Y":
+                if user.deleteAccount():
+                    main_menu()
+                    
+        #Return to Main Menu
         elif choice == "5":
+            break
+        elif choice == "6":
             user.setStatus(2)
             break
 

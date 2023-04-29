@@ -154,6 +154,23 @@ class User:
             print(f"Order ID #{cart[0]}: ------- ${total:.2f}")
         
         return True
+    
+    def deleteAccount(self):
+        conn = sqlite3.connect('shop.db')
+        c = conn.cursor()
+        
+        c.execute('''CREATE TABLE IF NOT EXISTS items
+                    (item_id INTEGER PRIMARY KEY, user_id INTEGER not null, name varchar(255) not null, amount INTEGER not null, price REAL not null)''')
+        
+        # Delete user's inventory (if they are seller, if just buyer, nothing will happen)
+        c.execute("DELETE FROM items WHERE user_id = ?", (self.id,))
+        conn.commit()
+
+        c.execute("DELETE FROM user WHERE user_id = ?", (self.id,))
+        conn.commit()
+
+        conn.close()
+        return True
 
     def getStatus(self):
         return self.status
@@ -169,7 +186,6 @@ class User:
         conn.commit()
         conn.close()
         return True
-        pass
 
     def getID(self):
         return self.id
@@ -237,10 +253,10 @@ class Item:
         for item in self.items:
             print(f"(x{item['amount']}) {item['name']} ------- ${item['price']:.2f}")
     
-    def delete_item(self, user:User, item_id):
+    def delete_item(self, user: User, item_id):
         conn = sqlite3.connect('shop.db')
         c = conn.cursor()
-        c.execute("DELETE FROM items WHERE item_id = ? AND user_id", (item_id, user.getID))
+        c.execute("DELETE FROM items WHERE item_id = ? AND user_id = ?", (item_id, user.getID()))
         conn.commit()
         conn.close()
         print(f"'{item_id}' has been deleted from our inventory.")
@@ -445,7 +461,7 @@ class Shop:
         conn = sqlite3.connect('shop.db')
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS items
-                     (name TEXT PRIMARY KEY, price REAL, amount INTEGER)''')
+                    (item_id INTEGER PRIMARY KEY, user_id INTEGER not null, name varchar(255) not null, amount INTEGER not null, price REAL not null)''')
         conn.commit()
         conn.close()
 
